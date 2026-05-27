@@ -1,9 +1,31 @@
-# 🐟 Nila Prima Farm — Fullstack Ecommerce
+# Nila Prima Farm (Platform Sistem Penjualan Benih Ikan Nila Super) - RPL Kelompok 16 R4
 
-Platform jual beli benih ikan nila premium berbasis web. Dibangun dengan React + Vite (frontend) dan Node.js + Express + MySQL (backend).
+## Anggota Kelompok
+
+- Ahmad Sauqhi Badrani - M0405241068
+- Ar Rasyid Ibrahim Huwaidi - M0405241072
+- Ahsan Dzakwan Mahendra - M0405241076 (Frontend dan Backend)
 
 ---
+## 📌 Apa itu Nila Prima Farm?
 
+Nila Prima Farm adalah platform e-commerce berbasis web yang dirancang untuk membantu digitalisasi penjualan benih ikan nila secara modern dan efisien. Sistem ini memungkinkan pengguna untuk melihat produk, melakukan transaksi online, serta mengelola pembelian melalui dashboard yang terintegrasi.
+
+Selain sebagai platform penjualan, Nila Prima Farm juga dilengkapi fitur analisis data dan prediksi penjualan berbasis Artificial Intelligence (AI). Model machine learning digunakan untuk membantu menganalisis pola penjualan dan memberikan insight bisnis berdasarkan data transaksi.
+
+Project ini dikembangkan sebagai integrasi antara:
+- Rekayasa Perangkat Lunak (RPL)
+- Pengantar Sains Data (PSD)
+- Pengantar Kecerdasan Buatan (PKB)
+
+dengan tujuan membangun sistem full-stack yang tidak hanya berfungsi sebagai website penjualan, tetapi juga mendukung pengambilan keputusan berbasis data.
+
+---
+## Class Diagram
+
+![Class Diagram](docs/class-diagram.png)
+
+---
 ## ⚙️ Tech Stack
 
 | Layer | Teknologi |

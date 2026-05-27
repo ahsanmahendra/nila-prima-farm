@@ -64,6 +64,18 @@ nila-prima-farm/
     └── server.js
 ```
 
+## Tampilan Fitur-Fitur
+
+### 1. 
+
+### 2.
+
+### 3.
+
+### 4. 
+
+### 5.
+
 ---
 
 ## 🚀 Cara Menjalankan

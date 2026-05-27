@@ -1,4 +1,4 @@
-# 🐟 Nila Prima Farm — Fullstack Ecommerce
+# Nila Prima Farm — Fullstack Ecommerce
 
 Platform jual beli benih ikan nila premium berbasis web. Dibangun dengan React + Vite (frontend) dan Node.js + Express + MySQL (backend).
 

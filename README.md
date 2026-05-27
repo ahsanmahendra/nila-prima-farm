@@ -1,4 +1,4 @@
-# Nila Prima Farm — Fullstack Ecommerce
+# Nila Prima Farm (Platform Sistem Penjualan Benih Ikan Nila Super) - RPL Kelompok 16 R4
 
 Platform jual beli benih ikan nila premium berbasis web. Dibangun dengan React + Vite (frontend) dan Node.js + Express + MySQL (backend).
 

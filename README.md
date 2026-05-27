@@ -7,7 +7,7 @@
 - Ahsan Dzakwan Mahendra - M0405241076 (Frontend dan Backend)
 
 ---
-## 📌 Apa itu Nila Prima Farm?
+## Apa itu Nila Prima Farm?
 
 Nila Prima Farm adalah platform e-commerce berbasis web yang dirancang untuk membantu digitalisasi penjualan benih ikan nila secara modern dan efisien. Sistem ini memungkinkan pengguna untuk melihat produk, melakukan transaksi online, serta mengelola pembelian melalui dashboard yang terintegrasi.
 

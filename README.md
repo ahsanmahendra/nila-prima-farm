@@ -23,7 +23,7 @@ dengan tujuan membangun sistem full-stack yang tidak hanya berfungsi sebagai web
 ---
 ## Class Diagram
 
-
+![Class Diagram](docs/class-diagram.png)
 
 ---
 ## ⚙️ Tech Stack

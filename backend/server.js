@@ -1,10 +1,3 @@
-// backend/server.js (FIXED — tambahkan bagian yang ditandai FIX)
-// Diff dari server.js asli:
-//   + import rateLimiter
-//   + apply authLimiter ke /api/auth/*
-//   + apply apiLimiter global
-//   + register /api/ai routes
-
 const express    = require('express');
 const cors       = require('cors');
 const path       = require('path');
@@ -13,16 +6,14 @@ const app        = express();
 // FIX: Rate limiter
 const { authLimiter, apiLimiter } = require('./middleware/rateLimiter');
 
-// ── Routes (existing) ────────────────────────────────────────────────────────
+// ── Routes ────────────────────────────────────────────────────────────────────
 const authRoutes    = require('./routes/auth');
 const productRoutes = require('./routes/products');
 const cartRoutes    = require('./routes/cart');
 const orderRoutes   = require('./routes/orders');
 const paymentRoutes = require('./routes/payment');
 const adminRoutes   = require('./routes/admin');
-
-// FIX: AI routes baru
-const aiRoutes = require('./routes/aiRoutes');
+const aiRoutes      = require('./routes/aiRoutes');
 
 // ── Middleware ────────────────────────────────────────────────────────────────
 const allowedOrigins = [
@@ -30,10 +21,20 @@ const allowedOrigins = [
   'http://localhost:3000',
 ];
 
+// SATU cors saja — izinkan localhost + semua URL ngrok
 app.use(cors({
   origin: (origin, cb) => {
-    if (!origin || allowedOrigins.includes(origin)) cb(null, true);
-    else cb(new Error('CORS not allowed'));
+    if (
+      !origin ||
+      allowedOrigins.includes(origin) ||
+      /\.ngrok(-free)?\.app$/.test(origin) ||
+      /\.ngrok-free\.dev$/.test(origin) ||
+      /\.ngrok\.io$/.test(origin)
+    ) {
+      cb(null, true);
+    } else {
+      cb(new Error('CORS not allowed'));
+    }
   },
   credentials: true,
 }));
@@ -50,17 +51,12 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use('/api', apiLimiter);
 
 // ── Route registration ────────────────────────────────────────────────────────
-
-// FIX: Rate limiter khusus auth
 app.use('/api/auth',     authLimiter, authRoutes);
-
 app.use('/api/products', productRoutes);
 app.use('/api/cart',     cartRoutes);
 app.use('/api/orders',   orderRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/admin',    adminRoutes);
-
-// FIX: AI routes
 app.use('/api/ai',       aiRoutes);
 
 // ── Error handler ─────────────────────────────────────────────────────────────
@@ -72,7 +68,7 @@ app.use((err, req, res, next) => {
 });
 
 // ── Start ─────────────────────────────────────────────────────────────────────
-const PORT = process.env.PORT || 3001;
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log(`✅ Backend running on http://localhost:${PORT}`);
   console.log(`   AI service expected at ${process.env.AI_SERVICE_URL || 'http://localhost:5001'}`);

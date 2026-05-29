@@ -1,6 +1,6 @@
 const express = require('express')
 const router = express.Router()
-const { getAdminOrders, getAdminOrderById, updateAdminOrder, getAdminStats, getAdminUsers } = require('../controllers/adminController')
+const { getAdminOrders, getAdminOrderById, updateAdminOrder, deleteAdminOrder, getAdminStats, getAdminUsers } = require('../controllers/adminController')
 const authMiddleware = require('../middleware/authMiddleware')
 const adminMiddleware = require('../middleware/adminMiddleware')
 
@@ -11,5 +11,7 @@ router.get('/orders', getAdminOrders)
 router.get('/orders/:id', getAdminOrderById)
 router.put('/orders/:id', updateAdminOrder)
 router.get('/users', getAdminUsers)
+
+router.delete('/orders/:id', deleteAdminOrder)
 
 module.exports = router

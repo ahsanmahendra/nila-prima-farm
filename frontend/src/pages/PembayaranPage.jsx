@@ -39,12 +39,12 @@ export default function PembayaranPage() {
     setPayLoading(true)
     setError(null)
     try {
-      const res = await api.post('/payment/create', { order_id: order.id })
+      const res = await api.post('/payments/create', { order_id: order.id })
       const { snap_token } = res.data
 
       window.snap.pay(snap_token, {
         onSuccess: async (result) => {
-          await api.post('/payment/webhook', { ...result, order_id: order.id })
+          await api.post('/payments/webhook', { ...result, order_id: order.id })
           navigate('/riwayat', { state: { success: true } })
         },
         onPending: (result) => {

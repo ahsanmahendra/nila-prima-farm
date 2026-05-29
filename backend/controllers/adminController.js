@@ -119,4 +119,40 @@ const getAdminUsers = async (req, res, next) => {
   }
 }
 
-module.exports = { getAdminOrders, getAdminOrderById, updateAdminOrder, getAdminStats, getAdminUsers }
+// DELETE /api/admin/orders/:id
+const deleteAdminOrder = async (req, res, next) => {
+  const conn = await pool.getConnection()
+  try {
+    await conn.beginTransaction()
+    const [orders] = await conn.query('SELECT * FROM orders WHERE id = ?', [req.params.id])
+    if (!orders.length) return res.status(404).json({ message: 'Pesanan tidak ditemukan.' })
+
+    const order = orders[0]
+
+    // Kembalikan stok jika belum settlement
+    if (order.payment_status !== 'settlement') {
+      const [items] = await conn.query('SELECT * FROM order_items WHERE order_id = ?', [order.id])
+      for (const item of items) {
+        await conn.query(
+          'UPDATE products SET stock = stock + ?, sold = sold - ? WHERE id = ?',
+          [item.quantity, item.quantity, item.product_id]
+        )
+      }
+    }
+
+    // Hapus semua relasi lalu order
+    await conn.query('DELETE FROM order_items WHERE order_id = ?', [order.id])
+    await conn.query('DELETE FROM payments WHERE order_id = ?', [order.id])
+    await conn.query('DELETE FROM orders WHERE id = ?', [order.id])
+
+    await conn.commit()
+    res.json({ message: 'Pesanan berhasil dihapus.' })
+  } catch (err) {
+    await conn.rollback()
+    next(err)
+  } finally {
+    conn.release()
+  }
+}
+
+module.exports = { getAdminOrders, getAdminOrderById, updateAdminOrder, deleteAdminOrder, getAdminStats, getAdminUsers }

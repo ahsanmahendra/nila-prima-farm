@@ -5,6 +5,8 @@ import { useAuth } from '../context/AuthContext'
 import { formatRupiah } from '../data/dummy'
 import { Alert, Spinner } from '../components/UI'
 import api from '../services/api'
+import { lazy, Suspense } from 'react'
+const MapPicker = lazy(() => import('../components/MapPicker'))
 
 export default function CheckoutPage() {
   const { cart, totalPrice, clearCart } = useCart()
@@ -19,6 +21,8 @@ export default function CheckoutPage() {
     province: '',
     postal_code: '',
     notes: '',
+    lat: null,
+    lng: null,
   })
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState(null)
@@ -31,21 +35,18 @@ export default function CheckoutPage() {
   const handleSubmit = async (e) => {
     e.preventDefault()
 
-    // Validasi nama
     if (!form.name.trim() || form.name.trim().length < 2) {
       setError('Nama penerima harus diisi minimal 2 karakter.')
       return
     }
 
-    // Validasi nomor WhatsApp
     const phoneClean = form.phone.replace(/[\s\-().]/g, '')
     const phoneValid = /^(\+62|62|08)\d{8,12}$/.test(phoneClean)
     if (!phoneClean || !phoneValid) {
-      setError('Nomor WhatsApp tidak valid. Contoh: 08123456789 atau +6281234567890')
+      setError('Nomor WhatsApp tidak valid. Contoh: 08123456789')
       return
     }
 
-    // Validasi alamat
     if (!form.address.trim() || form.address.trim().length < 10) {
       setError('Alamat lengkap harus diisi minimal 10 karakter.')
       return
@@ -58,12 +59,15 @@ export default function CheckoutPage() {
       setError('Provinsi harus diisi.')
       return
     }
-
     setLoading(true)
     setError(null)
     try {
       const res = await api.post('/orders', {
-        shipping_address: form,
+        shipping_address: {
+          ...form,
+          lat: form.lat,
+          lng: form.lng,
+        },
         items: cart.map(i => ({ product_id: i.product_id, quantity: i.quantity, price: i.price })),
         total_amount: grandTotal,
         shipping_cost: shipping,
@@ -119,6 +123,16 @@ export default function CheckoutPage() {
                 <div>
                   <label className="block text-sm font-medium text-slate-700 mb-1.5">Alamat Lengkap *</label>
                   <textarea name="address" value={form.address} onChange={handleChange} required rows={3} className="input-field resize-none" placeholder="Nama jalan, nomor rumah, RT/RW, kelurahan..." />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-slate-700 mb-1.5">Lokasi di Peta <span className="text-slate-400 font-normal">(opsional)</span></label>
+                  <Suspense fallback={<div className="h-72 bg-slate-100 rounded-xl flex items-center justify-center text-sm text-slate-400">Memuat peta...</div>}>
+                    <MapPicker
+                      lat={form.lat}
+                      lng={form.lng}
+                      onLocationSelect={(lat, lng) => setForm(f => ({ ...f, lat, lng }))}
+                    />
+                  </Suspense>
                 </div>
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>

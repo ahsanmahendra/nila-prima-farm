@@ -153,4 +153,45 @@ const getOrderById = async (req, res, next) => {
   }
 }
 
-module.exports = { createOrder, getOrders, getOrderById }
+
+// DELETE /api/orders/:id (user cancel — hanya pesanan pending)
+const cancelOrder = async (req, res, next) => {
+  const conn = await pool.getConnection()
+  try {
+    await conn.beginTransaction()
+    const [orders] = await conn.query(
+      'SELECT * FROM orders WHERE id = ? AND user_id = ?',
+      [req.params.id, req.user.id]
+    )
+    if (!orders.length) return res.status(404).json({ message: 'Pesanan tidak ditemukan.' })
+
+    const order = orders[0]
+    if (!['pending', 'cancelled'].includes(order.status) || order.payment_status === 'settlement') {
+      return res.status(400).json({ message: 'Pesanan yang sudah dibayar tidak dapat dibatalkan.' })
+    }
+
+    // Kembalikan stok
+    const [items] = await conn.query('SELECT * FROM order_items WHERE order_id = ?', [order.id])
+    for (const item of items) {
+      await conn.query(
+        'UPDATE products SET stock = stock + ?, sold = sold - ? WHERE id = ?',
+        [item.quantity, item.quantity, item.product_id]
+      )
+    }
+
+    await conn.query(
+      "UPDATE orders SET status = 'cancelled', payment_status = 'cancel' WHERE id = ?",
+      [order.id]
+    )
+
+    await conn.commit()
+    res.json({ message: 'Pesanan berhasil dibatalkan.' })
+  } catch (err) {
+    await conn.rollback()
+    next(err)
+  } finally {
+    conn.release()
+  }
+}
+
+module.exports = { createOrder, getOrders, getOrderById, cancelOrder }

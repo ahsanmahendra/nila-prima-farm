@@ -33,6 +33,7 @@ export default function RiwayatPage() {
   const [orders, setOrders] = useState([])
   const [loading, setLoading] = useState(true)
   const [filter, setFilter] = useState('all')
+  const [cancellingId, setCancellingId] = useState(null)
   const location = useLocation()
   const [successMsg, setSuccessMsg] = useState(location.state?.success ? 'Pembayaran berhasil! Pesanan Anda sedang diproses.' : null)
 
@@ -51,6 +52,20 @@ export default function RiwayatPage() {
   }, [])
 
   const filtered = orders.filter(o => filter === 'all' || o.status === filter)
+
+  const handleCancel = async (orderId) => {
+    if (!window.confirm('Yakin ingin membatalkan pesanan ini?')) return
+    setCancellingId(orderId)
+    try {
+      await api.delete(`/orders/${orderId}`)
+      setOrders(prev => prev.map(o => o.id === orderId ? { ...o, status: 'cancelled', payment_status: 'cancel' } : o))
+      setSuccessMsg('Pesanan berhasil dibatalkan.')
+    } catch (err) {
+      alert(err.response?.data?.message || 'Gagal membatalkan pesanan.')
+    } finally {
+      setCancellingId(null)
+    }
+  }
 
   if (loading) return <LoadingPage />
 
@@ -126,10 +141,19 @@ export default function RiwayatPage() {
                   <p className="font-bold text-primary-700">{formatRupiah(order.total_amount)}</p>
                 </div>
                 <div className="flex gap-2">
-                  {order.payment_status === 'pending' && (
-                    <Link to="/pembayaran" state={{ order }} className="btn-primary text-xs py-2 px-4">
-                      Bayar Sekarang
-                    </Link>
+                  {order.payment_status === 'pending' && order.status !== 'cancelled' && (
+                    <>
+                      <Link to="/pembayaran" state={{ order }} className="btn-primary text-xs py-2 px-4">
+                        Bayar Sekarang
+                      </Link>
+                      <button
+                        onClick={() => handleCancel(order.id)}
+                        disabled={cancellingId === order.id}
+                        className="text-xs py-2 px-4 rounded-xl border border-red-200 text-red-600 hover:bg-red-50 font-semibold transition-colors disabled:opacity-50"
+                      >
+                        {cancellingId === order.id ? 'Membatalkan...' : 'Batalkan'}
+                      </button>
+                    </>
                   )}
                   <Link to={`/riwayat/${order.id}`} className="btn-outline text-xs py-2 px-4">
                     Detail

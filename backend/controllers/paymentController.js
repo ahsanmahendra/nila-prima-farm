@@ -87,7 +87,13 @@ const createPayment = async (req, res, next) => {
 // POST /api/payment/webhook  (Midtrans notification)
 const handleWebhook = async (req, res, next) => {
   try {
-    const notification = req.body
+    // Parse body — bisa Buffer (dari express.raw) atau object (dari express.json)
+    let notification = req.body
+    if (Buffer.isBuffer(notification)) {
+      notification = JSON.parse(notification.toString('utf8'))
+    } else if (typeof notification === 'string') {
+      notification = JSON.parse(notification)
+    }
     console.log('📨 Midtrans Webhook:', notification)
 
     // Verify signature

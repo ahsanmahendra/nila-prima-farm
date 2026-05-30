@@ -4,7 +4,7 @@
 
 - Ahmad Sauqhi Badrani - M0405241068
 - Ar Rasyid Ibrahim Huwaidi - M0405241072
-- Ahsan Dzakwan Mahendra - M0405241076 (Frontend dan Backend)
+- Ahsan Dzakwan Mahendra - M0405241076
 
 ---
 ## Apa itu Nila Prima Farm?
